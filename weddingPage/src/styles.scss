@@ -1,0 +1,59 @@
+:host {
+    font-family: "Great Vibes", cursive;
+    font-weight: 400;
+    font-size: 16px;
+    font-style: normal;
+    color: #333;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+
+html {
+    overflow-x: hidden;
+}
+
+// Definir colores pastel
+$yellow-pastel: #FDE8C9; // Amarillo pálido
+$lavender-pastel: #C3AED6; // Lavanda
+$mint-pastel: #B5EAD7; // Menta
+$rose-pastel: #FADADD; // Rosa claro
+$blue-pastel: #A8DADC; // Azul cielo
+$peach-pastel: #FFD1BA;   // Melocotón
+$soft-pink-pastel: #FFB6C1; // Rosa suave
+$light-gray-pastel: #D3D3D3; // Gris claro
+$baby-blue-pastel: #B3E5FC;  // Azul bebé
+$light-green-pastel: #C8E6C9; // Verde claro
+$soft-lilac-pastel: #E6E6FA;  // Lila suave
+$coral-pastel: #FFDDC1;    // Coral suave
+$beige-pastel: #F5F5DC;    // Beige
+$cream-pastel: #FFFDD0;    // Crema
+$light-yellow-pastel: #FFFACD; // Amarillo claro
+
+$text-on-lavender: #5DADE2; // Azul cielo suave
+
+
+.button-realista {
+    background-color: rgba(255, 255, 255, 1);
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 8px 10px rgba(0, 0, 0, 0.15), inset 0 -3px 6px rgba(0, 0, 0, 0.1);
+    // color: $lavender-pastel;
+    color: #825c64;
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2), inset 0 -1px 4px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    &:active {
+        box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.2);
+        transform: translateY(2px);
+    }
+}

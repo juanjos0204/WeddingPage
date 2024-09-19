@@ -1,0 +1,60 @@
+@import 'src/styles.scss';
+
+html, body {
+    height: 100%;
+    margin: 0;
+    // font-family: $font-family; // Puedes usar la fuente de tu elección
+    // overflow-x: hidden; // Evita el scroll horizontal
+    // scroll-behavior: smooth; // Scroll suave entre secciones
+    margin: 0;
+    padding: 0;
+  }
+
+//   .content {
+//     padding-top: 70px; // Ajusta según la altura de tu navbar
+//   }
+  
+  .section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; // Ocupa el 100% de la altura de la ventana
+    width: 100vw; // Ocupa el 100% del ancho de la ventana
+    position: relative;
+    // padding: 20px;
+  }
+  
+  .card {
+    background-color: #fff; // Fondo blanco de la tarjeta
+    border-radius: 12px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); // Sombras para efecto de tarjeta
+    padding: 40px;
+    text-align: center;
+    max-width: 500px; // Ancho máximo de la tarjeta
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .section1 {
+    // background-color: $lavender-pastel; // Fondo lavanda pastel
+    background-image: url(../assets/background/e596013bf548fddb408093bf5f6928f6.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-x: center;
+  }
+  
+  .section2 {
+    // background-color: $mint-pastel; // Fondo menta pastel
+    background-image: url(../assets/background/1725.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-x: center;
+  }
+  
+  .section3 {
+    // background-color: $rose-pastel; // Fondo rosa pastel
+    background-image: url(../assets/background/f6aa319ea42f5dc836facc09f27b7c97.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-x: center;
+  }
