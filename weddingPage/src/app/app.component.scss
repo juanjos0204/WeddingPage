@@ -3,27 +3,37 @@
 html, body {
     height: 100%;
     margin: 0;
-    // font-family: $font-family; // Puedes usar la fuente de tu elección
-    // overflow-x: hidden; // Evita el scroll horizontal
-    // scroll-behavior: smooth; // Scroll suave entre secciones
     margin: 0;
     padding: 0;
   }
-
-//   .content {
-//     padding-top: 70px; // Ajusta según la altura de tu navbar
-//   }
+  
+  .section .card{
+      color: $text-on-card;
+      
+    }
   
   .section {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; // Ocupa el 100% de la altura de la ventana
-    width: 100vw; // Ocupa el 100% del ancho de la ventana
+    height: 100vh;
+    width: 100vw;
     position: relative;
-    // padding: 20px;
-  }
+    overflow: hidden; // Para asegurarte de que la capa de fondo no se salga de la sección
   
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.5; // Nivel de opacidad (ajusta según prefieras)
+      z-index: 1; // Asegura que el fondo esté detrás de las cards
+    }
+
   .card {
     background-color: #fff; // Fondo blanco de la tarjeta
     border-radius: 12px;
@@ -33,28 +43,74 @@ html, body {
     max-width: 500px; // Ancho máximo de la tarjeta
     width: 100%;
     box-sizing: border-box;
+    z-index: 1;
   }
-  
-  .section1 {
-    // background-color: $lavender-pastel; // Fondo lavanda pastel
-    background-image: url(../assets/background/e596013bf548fddb408093bf5f6928f6.jpg);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position-x: center;
+}
+
+.section1::before {
+  background-image: url(../assets/background/e596013bf548fddb408093bf5f6928f6.jpg);
+}
+
+.section2::before {
+  background-image: url(../assets/background/1725.jpg);
+}
+
+.section3::before {
+  background-image: url(../assets/background/f6aa319ea42f5dc836facc09f27b7c97.jpg);
+}
+
+/* Contenedor para la lluvia de pétalos */
+.petals-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Para que no interfiera con los clics de la página */
+  z-index: 2; /* Colocar la lluvia detrás de todos los elementos */
+}
+
+/* Estilo base de los pétalos */
+.petal {
+  position: absolute;
+  width: 20px;
+  height: 30px;
+  background-color: #F5A6C9; /* Color pastel */
+  opacity: 0.3;
+  border-radius: 100% 30% 100% 0%; /* Forma de pétalo: redondeada en la parte superior, puntiaguda en la inferior */
+  transform: rotate(30deg); /* Rotar un poco para dar un efecto más realista */
+  animation: fall 10s linear infinite, sway 5s ease-in-out infinite;
+}
+
+/* Animación de caída */
+@keyframes fall {
+  0% {
+    top: -10%;
+    transform: translateX(0) rotate(0deg);
   }
-  
-  .section2 {
-    // background-color: $mint-pastel; // Fondo menta pastel
-    background-image: url(../assets/background/1725.jpg);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position-x: center;
+  100% {
+    top: 110%;
+    transform: translateX(50px) rotate(360deg);
   }
-  
-  .section3 {
-    // background-color: $rose-pastel; // Fondo rosa pastel
-    background-image: url(../assets/background/f6aa319ea42f5dc836facc09f27b7c97.jpg);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position-x: center;
+}
+
+/* Animación de balanceo para dar un efecto de viento */
+@keyframes sway {
+  0% {
+    transform: translateX(0px);
   }
+  50% {
+    transform: translateX(20px);
+  }
+  100% {
+    transform: translateX(-20px);
+  }
+}
+
+/* Generar pétalos aleatoriamente */
+@for $i from 1 through 50 {
+  .petal:nth-child(#{$i}) {
+    left: random(100) * 1%;
+    animation-delay: random(10) * 1s, random(5) * 1s;
+  }
+}

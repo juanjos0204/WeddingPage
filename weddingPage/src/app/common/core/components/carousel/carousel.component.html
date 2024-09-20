@@ -1,0 +1,28 @@
+<div id="textCarousel" class="carousel slide" data-bs-ride="carousel">
+    <!-- Indicadores para los slides -->
+    <div class="carousel-indicators">
+      <button *ngFor="let item of carouselItems; let i = index" type="button" data-bs-target="#textCarousel" [attr.data-bs-slide-to]="i" [class.active]="i === 0" aria-current="i === 0" [attr.aria-label]="item.title"></button>
+    </div>
+  
+    <!-- Los elementos del carrusel -->
+    <div class="carousel-inner">
+      <div *ngFor="let item of carouselItems; let i = index" class="carousel-item" [class.active]="i === 0">
+        <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
+          <div class="text-center">
+            <h3 class="display-6">{{ item.title }}</h3>
+            <p class="alice-regular">{{ item.text }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Controles para mover entre slides -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#textCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Anterior</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#textCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Siguiente</span>
+    </button>
+  </div>  

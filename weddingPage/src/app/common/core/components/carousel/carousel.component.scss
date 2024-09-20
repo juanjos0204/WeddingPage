@@ -1,0 +1,72 @@
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #ffcccc;
+    border-radius: 50%;
+}
+
+.carousel-indicators [data-bs-target] {
+    background-color: #ffb3b3;
+}
+
+// .carousel-control-prev,
+// .carousel-control-next {
+//     width: 5%;
+//     /* Ajusta el ancho del área de control si lo necesitas */
+// }
+
+.carousel-control-prev {
+    left: -2rem;
+    /* Mueve el control izquierdo más hacia afuera */
+}
+
+.carousel-control-next {
+    right: -2rem;
+    /* Mueve el control derecho más hacia afuera */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #ffcccc;
+    /* Colores pastel */
+    border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+
+    /* Para pantallas pequeñas como tablets o móviles */
+    .carousel-item h3 {
+        font-size: 1.5rem;
+        /* Reducir el tamaño del título en pantallas más pequeñas */
+        //   text-align: left;
+        text-wrap: balance;
+    }
+
+    .carousel-item p {
+        font-size: 1rem;
+        /* Reducir el tamaño del texto */
+        padding: 0 10px;
+        /* Reducir el padding para no ocupar tanto espacio */
+        //   text-align: left;
+        text-wrap: balance;
+    }
+}
+
+@media (max-width: 576px) {
+
+    /* Para pantallas muy pequeñas, como móviles */
+    .carousel-item h3 {
+        font-size: 1.5rem;
+        /* Reducir más el tamaño del título */
+        //   text-align: left;
+        text-wrap: balance;
+    }
+
+    .carousel-item p {
+        font-size: 0.9rem;
+        /* Reducir más el tamaño del texto */
+        padding: 0 5px;
+        /* Aún menos padding para aprovechar mejor el espacio */
+        //   text-align: left;
+        text-wrap: balance;
+    }
+}
