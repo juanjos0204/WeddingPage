@@ -1,52 +1,123 @@
 @import 'src/styles.scss';
 
-html, body {
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.scroll-snap-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  transition: scroll-behavior 0.5s ease;
+}
+
+.section {
+  height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
-    margin: 0;
-    margin: 0;
-    padding: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.5; // Ajusta según prefieras
+    z-index: 0; // Fondo detrás de las cards
   }
-  
-  .section .card{
-      color: $text-on-card;
-      
-    }
-  
-  .section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100vw;
-    position: relative;
-    overflow: hidden; // Para asegurarte de que la capa de fondo no se salga de la sección
-  
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      opacity: 0.5; // Nivel de opacidad (ajusta según prefieras)
-      z-index: 1; // Asegura que el fondo esté detrás de las cards
-    }
 
   .card {
-    background-color: #fff; // Fondo blanco de la tarjeta
+    background-color: #fff;
     border-radius: 12px;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); // Sombras para efecto de tarjeta
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
     padding: 40px;
     text-align: center;
-    max-width: 500px; // Ancho máximo de la tarjeta
+    max-width: 500px;
     width: 100%;
     box-sizing: border-box;
-    z-index: 1;
+    align-items: center;
+    color: $text-on-card;
+    z-index: 1; // Tarjeta encima del fondo
+    & a {
+      color: currentcolor;
+    }
   }
 }
 
+/* Tooltip */
+.tooltip-inner {
+  background-color: #f5a6c9 !important;
+  color: #ffffff !important;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.tooltip-arrow::before {
+  border-top-color: #f5a6c9 !important;
+}
+
+/* Overlay */
+.guide-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3; // Overlay oscuro
+}
+
+/* Foco visual */
+#focusText {
+  position: relative;
+  z-index: 4; // Texto destacado
+  background-color: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.8);
+}
+
+/* Tooltip debajo del foco */
+.guide-tooltip {
+  position: absolute;
+  top: 150%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f5f5f5;
+  color: #333;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+  font-size: 1rem;
+  z-index: 4; // Tooltip bajo el foco
+  text-align: center;
+  max-width: 80vw;
+}
+
+/* Botón para cerrar la guía */
+#closeGuide {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5; // Botón encima de todo
+  background-color: #007bff;
+  color: white;
+}
+
+/* Secciones específicas */
 .section1::before {
   background-image: url(../assets/background/e596013bf548fddb408093bf5f6928f6.jpg);
 }
@@ -59,6 +130,105 @@ html, body {
   background-image: url(../assets/background/f6aa319ea42f5dc836facc09f27b7c97.jpg);
 }
 
+/* Modal */
+.modal-content {
+  height: 95vh;
+  // padding-top: 3rem;
+}
+
+//Start form
+/* Contenedor de la imagen circular en el modal */
+.modal-img-container {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  top: -10px; /* Mueve la imagen hacia arriba */
+  z-index: 1;
+  height: auto; /* Auto para que el contenedor tome el alto del contenido */
+  max-height: 200px; /* Limitar la altura máxima de la imagen */
+  padding: 0; /* Asegúrate de que no haya padding que incremente la altura */
+}
+
+/* Estilo de la imagen circular */
+.modal-img {
+  width: 15rem;
+  height: 15rem;
+  border-radius: 50%;
+  border: 4px solid white;
+  object-fit: cover;
+}
+
+/* Asegurar que el contenido del modal esté alineado correctamente */
+.modal-header {
+  margin-top: -40px; /* Ajustar la posición del header para dejar espacio a la imagen */
+  text-align: center;
+  z-index: 2;
+}
+
+.modal-body {
+  padding-top: 20px; /* Para ajustar el padding debajo de la imagen */
+}
+
+/* Ajustes adicionales para el formulario */
+.form-check-input {
+  margin-right: 5px;
+}
+
+.check-label {
+  font-size: 1.2rem;
+}
+
+/* Alinear los radio buttons horizontalmente */
+.d-flex .form-check {
+  display: flex;
+  align-items: center;
+}
+
+.input-field {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.input-field label {
+  position: absolute;
+  color: #8d8d8d;
+  pointer-events: none;
+  left: 15px;
+  transform: translateY(0.6rem);
+  transition: all 0.3s ease;
+  background-color: transparent;
+}
+
+.input-field input {
+  padding: 10px 15px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: solid 1px #8d8d8d;
+  letter-spacing: 1px;
+  width: 100%;
+}
+
+.input-field input:focus,
+.input-field input:valid {
+  outline: none;
+  border: solid 1px $text-on-card;
+}
+
+.input-field input:focus ~ label,
+.input-field input:valid ~ label {
+  transform: translateY(-51%) translateX(-10px) scale(0.8);
+  background-color: #fff;
+  padding: 0px 5px;
+  color: $text-on-card;
+  font-weight: bolder;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 100px;
+  font-size: large;
+}
+
+//End form
+
 /* Contenedor para la lluvia de pétalos */
 .petals-container {
   position: fixed;
@@ -66,8 +236,38 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* Para que no interfiera con los clics de la página */
-  z-index: 2; /* Colocar la lluvia detrás de todos los elementos */
+  pointer-events: none;
+  z-index: 1; // Detrás de las cards
+}
+
+/* Listas */
+ol {
+  counter-reset: list-counter;
+  padding-left: 20px;
+}
+
+li {
+  position: relative;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  padding-left: 1rem;
+}
+
+li::marker {
+  counter-increment: list-counter;
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ff7f7f;
+  background-color: #f2f2f2;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Estilo base de los pétalos */
@@ -75,14 +275,14 @@ html, body {
   position: absolute;
   width: 20px;
   height: 30px;
-  background-color: #F5A6C9; /* Color pastel */
+  background-color: #F5A6C9;
   opacity: 0.3;
-  border-radius: 100% 30% 100% 0%; /* Forma de pétalo: redondeada en la parte superior, puntiaguda en la inferior */
-  transform: rotate(30deg); /* Rotar un poco para dar un efecto más realista */
+  border-radius: 100% 30% 100% 0%;
+  transform: rotate(30deg);
   animation: fall 10s linear infinite, sway 5s ease-in-out infinite;
 }
 
-/* Animación de caída */
+/* Animaciones */
 @keyframes fall {
   0% {
     top: -10%;
@@ -94,7 +294,6 @@ html, body {
   }
 }
 
-/* Animación de balanceo para dar un efecto de viento */
 @keyframes sway {
   0% {
     transform: translateX(0px);

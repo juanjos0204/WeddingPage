@@ -46,7 +46,7 @@ $text-on-card: #825c64;
     border-radius: 10px;
     box-shadow: 0 8px 10px rgba(0, 0, 0, 0.15), inset 0 -3px 6px rgba(0, 0, 0, 0.1);
     // color: $lavender-pastel;
-    color: #825c64;
+    color: $text-on-card;
     font-size: 1.2rem;
     padding: 10px 20px;
     transition: all 0.2s ease-in-out;
@@ -64,6 +64,25 @@ $text-on-card: #825c64;
     }
 }
 
+.button-rounded{
+    border-radius: 2rem;
+}
+
+.button-gradient {
+    background: linear-gradient(135deg, $text-on-card, #d8a7b1);
+    color: #fff; /* Mantener el texto en blanco */
+    cursor: pointer;
+  }
+  
+  .button-gradient:hover {
+    background: linear-gradient(135deg, #d8a7b1, $text-on-card); /* Invertir los colores en el hover */
+  }
+  
+
 .font-weight-bold {
     font-weight: bold;
+}
+
+.modal-header {
+    border-bottom: none;
 }

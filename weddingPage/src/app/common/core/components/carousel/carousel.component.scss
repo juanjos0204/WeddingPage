@@ -15,20 +15,21 @@
 // }
 
 .carousel-control-prev {
-    left: -2rem;
+    left: -2.5rem;
     /* Mueve el control izquierdo más hacia afuera */
 }
 
 .carousel-control-next {
-    right: -2rem;
+    right: -2.5rem;
     /* Mueve el control derecho más hacia afuera */
 }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-color: #ffcccc;
+    background-color: grey;
     /* Colores pastel */
     border-radius: 50%;
+    opacity: 0.5;
 }
 
 @media (max-width: 768px) {

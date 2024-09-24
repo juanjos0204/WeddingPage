@@ -11,31 +11,131 @@
   <div class="petal"></div>
   <div class="petal"></div>
   <div class="petal"></div>
-  <!-- Repite según el número de pétalos que desees -->
 </div>
 
-<div class="content">
+<div class="content scroll-snap-container">
   <div id="section1" class="section section1">
     <div class="card">
       <h2 class="d-flex p-2 justify-content-center display-6">Nuestra boda, nuestra historia</h2>
       <h2 class="d-flex mt-2 p-2 justify-content-center alice-regular font-weight-bold">31 de mayo de 2025</h2>
-      <h2 class="d-flex p-2 justify-content-center display-2">Odalis & Juan</h2>
-      <!-- <p>¡Bienvenidos a nuestra boda!</p> -->
+      <h2 class="d-flex p-2 justify-content-center display-3">Odalis & Juanjo</h2>
       <app-carousel></app-carousel>
     </div>
   </div>
 
   <div id="section2" class="section section2">
     <div class="card">
-      <h2>Nosotros</h2>
-      <p>Nuestra historia de amor...</p>
+      <h2>Ubicación</h2>
+      <div class="card">
+        <h2 class="d-flex p-2 justify-content-center display-6">Tu presencia es importante</h2>
+        <h2 class="d-flex mt-2 p-2 justify-content-center alice-regular font-weight-bold">31 de mayo de 2025 | 12:00
+          P.M.</h2>
+        <a class="d-flex p-2 justify-content-center text-decoration-none alice-regular"
+          href="https://maps.app.goo.gl/SEAzgvHMRw9N5j9EA" target="_blank" id="focusText">
+          Finca Villa Esther, Vda. Curazao, Copacabana, Antioquia
+        </a>
+
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary button-realista button-rounded button-gradient mt-1"
+          data-bs-toggle="modal" data-bs-target="#exampleModal">RSVP</button>
+
+        <div #guideOverlay id="guideOverlay" class="guide-overlay">
+          <div id="guideTooltip" class="guide-tooltip">¡Aquí es donde se llevará a cabo el evento!</div>
+        </div>
+        <button type="button" class="btn btn-primary alice-regular" #closeGuide id="closeGuide"
+          (click)="closeFocus()">Puedes dar click en la dirección para conocer el mapa</button>
+      </div>
     </div>
   </div>
 
   <div id="section3" class="section section3">
     <div class="card">
-      <h2>Detalles del evento</h2>
-      <p>Fecha, lugar y más detalles...</p>
+      <h2 class="d-flex p-2 justify-content-center display-6">Detalles del evento</h2>
+      <ol>
+        <li class="alice-regular">El matrimonio se realizará a puerta cerrada y los invitados participarán de la reunión
+          y almuerzo organizado para la celebración de la boda.</li>
+        <li class="alice-regular">En nuestra celebración no ofreceremos licor, pero si lo deseas, siéntete libre de
+          llevar el tuyo.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <button type="button" class="btn-close d-flex align-self-end position-absolute top-0 z-3" data-bs-dismiss="modal"
+        aria-label="Close"></button>
+      <!-- Imagen circular centrada -->
+      <div class="modal-img-container">
+        <img src="../assets/images/WhatsApp.jpg" class="modal-img" alt="Imagen">
+      </div>
+
+      <div class="modal-body">
+        <!-- Formulario dentro del modal -->
+        <form>
+          <!-- Asistencia al evento (Radio buttons) -->
+          <div class="mb-3">
+            <label class="form-label display-4 d-flex justify-content-center">¿Asistirás al evento?</label>
+            <div class="d-flex justify-content-center check-label">
+              <div class="form-check me-3">
+                <input class="form-check-input" type="radio" name="attendance" id="attendYes" value="yes" required
+                  (change)="attendance.value = 'yes'">
+                <label class="form-check-label" for="attendYes">
+                  Con gusto acepto
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="attendance" id="attendNo" value="no"
+                  (change)="attendance.value = 'no'">
+                <label class="form-check-label" for="attendNo">
+                  Lamento no poder asistir
+                </label>
+              </div>
+            </div>
+          </div>
+          <!-- Campo de nombre -->
+          <div class="input-field" *ngIf="attendance.value == '' ? false : true">
+            <input required autocomplete="off" type="text" id="name" />
+            <label for="name">Nombre completo</label>
+          </div>
+
+          <!-- Campo de correo -->
+          <div class="input-field" *ngIf="attendance.value == '' ? false : attendance.value == 'yes' ? true : false">
+            <input required autocomplete="off" type="email" id="email" />
+            <label for="email">Correo electrónico</label>
+          </div>
+
+          <!-- Campo de teléfono -->
+          <div class="input-field" *ngIf="attendance.value == '' ? false : attendance.value == 'yes' ? true : false">
+            <input required autocomplete="off" type="tel" id="cellphone" />
+            <label for="cellphone">Teléfono</label>
+          </div>
+
+
+          <div class="d-flex justify-content-center mb-3" *ngIf="attendance.value == 'yes'">
+            <div class="form-check me-3">
+              <input class="form-check-input" type="checkbox" name="companion" id="companion" [(ngModel)]="companion" required>
+              <label class="form-check-label" for="companion">
+                LLevo acompañante
+              </label>
+            </div>
+          </div>
+          
+          <!-- Campo de nombre -->
+          <div class="input-field" *ngIf="companion && attendance.value == 'yes'">
+            <input required autocomplete="off" type="text" id="companionName" />
+            <label for="companionName">Nombre completo acompañante</label>
+          </div>
+
+          <!-- Botón de envío -->
+          <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary button-realista button-rounded font-weight-bold"
+              *ngIf="attendance.value == '' ? false : true">Enviar</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
