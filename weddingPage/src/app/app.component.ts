@@ -1,4 +1,6 @@
-import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { SheetdbService } from './common/shared/services/sheetDB.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 // Importa el tooltip de Bootstrap si no está cargado globalmente
 declare var bootstrap: any;
@@ -8,40 +10,89 @@ declare var bootstrap: any;
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements AfterViewInit, OnInit {
 
   @ViewChild('tooltipElement', { static: false }) tooltipElement!: ElementRef;
   @ViewChild('guideOverlay', { static: false }) guideOverlay!: ElementRef;
   @ViewChild('closeGuide', { static: false }) closeGuideButton!: ElementRef;
 
+  companion: boolean = false;  // Aquí declaramos la propiedad companion
+
   private sections: NodeListOf<Element> = document.querySelectorAll('.section');
-  private hasShownTooltip = localStorage.getItem('hasShownTooltip') === 'true';
   private guideClosed = localStorage.getItem('guideClosed') === 'true'; // Nuevo estado
   private currentSectionIndex = 0; // Índice de la sección actual
-  attendance: { value: string } = { value: '' }; // Inicializas el valor
-  companion: boolean = false;
 
-  
-  constructor() { }
+  form!: FormGroup;  // Declaramos el FormGroup para el formulario
+
+  constructor(private sheetdbService: SheetdbService) { }
+
+  ngOnInit() {
+    this.form = new FormGroup({
+      attendance: new FormControl('', Validators.required),
+      guestName: new FormControl('', Validators.required),
+      guestEmail: new FormControl('', [Validators.required, Validators.email]),
+      guestCellphone: new FormControl('', Validators.required),
+      companion: new FormControl(false),
+      companionName: new FormControl('')
+    });
+
+    // Validación del companion
+    this.form.get('companion')?.valueChanges.subscribe((value) => {
+      if (value) {
+        this.form.get('companionName')?.setValidators(Validators.required);
+      } else {
+        this.form.get('companionName')?.clearValidators();
+      }
+      this.form.get('companionName')?.updateValueAndValidity();
+    });
+
+    // Suscripción a los cambios del campo attendance
+    this.form.get('attendance')?.valueChanges.subscribe((value) => {
+      if (value === 'no') {
+        this.resetSpecificFormFields(); // Limpia los campos si se selecciona 'no'
+      }
+    });
+  }
+
+  // Método para limpiar campos específicos del formulario
+  resetSpecificFormFields() {
+    // Aquí defines qué campos quieres limpiar
+    this.form.get('guestName')?.reset(); // Restablece el campo nombre
+    this.form.get('guestEmail')?.reset(); // Restablece el campo email
+    this.form.get('guestCellphone')?.reset(); // Restablece el campo celular
+    this.form.get('companion')?.setValue(false); // Desmarca el checkbox de acompañante
+    this.form.get('companionName')?.reset(); // Restablece el campo de nombre de acompañante
+  }
+
+  // Método para resetear todos los campos del formulario
+  resetFormFields() {
+    this.form.reset();  // Resetea todos los campos del formulario
+  }
 
   ngAfterViewInit() {
-    // Asegúrate de que la guía esté oculta inicialmente
     this.guideOverlay.nativeElement.style.display = 'none';
     this.closeGuideButton.nativeElement.style.display = 'none';
 
     this.sections = document.querySelectorAll('.section');
-
-    // Asegúrate de iniciar en la sección 1 (scroll a la sección 1)
     window.scrollTo(0, 0);
-
-    // Agregar el listener para el scroll
     window.addEventListener('scroll', () => this.handleScroll());
-
-    // Generar pétalos al inicio
     this.generatePetals();
-
-    // Iniciar la observación de la sección 2
     this.observeSection2();
+
+    // Obtener el modal por su ID
+    const myModalEl = document.getElementById('exampleModal');
+    
+    // Asegúrate de que el modal existe antes de agregar el evento
+    if (myModalEl) {
+      myModalEl.addEventListener('hidden.bs.modal', () => {
+        this.onModalClose(); // Llama al método para limpiar campos
+      });
+    }
+  }
+
+  // Método llamado al cerrar el modal
+  onModalClose() {
+    this.resetFormFields(); // Limpiar los campos del formulario al cerrar el modal
   }
 
   closeFocus() {
@@ -127,6 +178,37 @@ export class AppComponent implements AfterViewInit {
       petal.style.animationDelay = `${Math.random() * 10}s`;
       petal.style.animationDuration = `${Math.random() * 5 + 5}s`;
       petalsContainer.appendChild(petal);
+    }
+  }
+
+  onSubmit(): void {
+    if (this.form.valid) {
+      const formData = this.form.value;
+      this.sheetdbService.postGuestData(
+        formData.attendance,
+        formData.guestName,
+        formData.guestEmail,
+        formData.guestCellphone,
+        formData.companionName
+      ).subscribe(
+        (response) => {
+          console.log('Data submitted successfully:', response);
+          this.resetFormFields();  // Resetea el formulario después de enviar los datos
+        },
+        (error) => {
+          console.error('Error submitting data:', error);
+        }
+      );
+    } else {
+      console.error('Please fill out all fields.');
+    }
+  }
+
+  ngOnDestroy() {
+    // Limpia el listener al destruir el componente
+    const myModalEl = document.getElementById('exampleModal');
+    if (myModalEl) {
+      myModalEl.removeEventListener('hidden.bs.modal', this.onModalClose);
     }
   }
 

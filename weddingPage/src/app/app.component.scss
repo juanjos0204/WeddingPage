@@ -113,7 +113,9 @@ body {
   left: 50%;
   transform: translateX(-50%);
   z-index: 5; // Botón encima de todo
-  background-color: #007bff;
+  // background-color: #007bff;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0;
   color: white;
 }
 

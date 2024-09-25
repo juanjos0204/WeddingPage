@@ -37,13 +37,21 @@
 
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary button-realista button-rounded button-gradient mt-1"
-          data-bs-toggle="modal" data-bs-target="#exampleModal">RSVP</button>
+          data-bs-toggle="modal" data-bs-target="#exampleModal">Confirmar Asistencia</button>
 
         <div #guideOverlay id="guideOverlay" class="guide-overlay">
           <div id="guideTooltip" class="guide-tooltip">¡Aquí es donde se llevará a cabo el evento!</div>
         </div>
-        <button type="button" class="btn btn-primary alice-regular" #closeGuide id="closeGuide"
-          (click)="closeFocus()">Puedes dar click en la dirección para conocer el mapa</button>
+
+        <div class="card" #closeGuide id="closeGuide">
+          <div class="card-body justify-content-center alice-regular">
+            ¡Puedes dar click en la dirección para conocer el mapa!
+            <div class=" d-flex justify-content-center mt-1">
+              <button type="button" class="btn btn-primary alice-regular"  
+                (click)="closeFocus()">Cerrar</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -74,67 +82,69 @@
 
       <div class="modal-body">
         <!-- Formulario dentro del modal -->
-        <form>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
           <!-- Asistencia al evento (Radio buttons) -->
-          <div class="mb-3">
+          <div class="mb-3 form-group">
             <label class="form-label display-4 d-flex justify-content-center">¿Asistirás al evento?</label>
             <div class="d-flex justify-content-center check-label">
               <div class="form-check me-3">
-                <input class="form-check-input" type="radio" name="attendance" id="attendYes" value="yes" required
-                  (change)="attendance.value = 'yes'">
-                <label class="form-check-label" for="attendYes">
-                  Con gusto acepto
-                </label>
+                <input class="form-check-input" type="radio" formControlName="attendance" value="yes" id="attendYes">
+                <label class="form-check-label" for="attendYes">Con gusto acepto</label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="attendance" id="attendNo" value="no"
-                  (change)="attendance.value = 'no'">
-                <label class="form-check-label" for="attendNo">
-                  Lamento no poder asistir
-                </label>
+                <input class="form-check-input" type="radio" formControlName="attendance" value="no" id="attendNo">
+                <label class="form-check-label" for="attendNo">Lamento no poder asistir</label>
               </div>
             </div>
           </div>
+        
           <!-- Campo de nombre -->
-          <div class="input-field" *ngIf="attendance.value == '' ? false : true">
-            <input required autocomplete="off" type="text" id="name" />
-            <label for="name">Nombre completo</label>
+          <div class="input-field form-group" *ngIf="form.get('attendance')?.value === 'yes' || form.get('attendance')?.value === 'no'">
+            <input required autocomplete="off" type="text" id="name" formControlName="guestName" />
+            <label for="name">Nombre completo*</label>
           </div>
-
+        
           <!-- Campo de correo -->
-          <div class="input-field" *ngIf="attendance.value == '' ? false : attendance.value == 'yes' ? true : false">
-            <input required autocomplete="off" type="email" id="email" />
-            <label for="email">Correo electrónico</label>
-          </div>
-
-          <!-- Campo de teléfono -->
-          <div class="input-field" *ngIf="attendance.value == '' ? false : attendance.value == 'yes' ? true : false">
-            <input required autocomplete="off" type="tel" id="cellphone" />
-            <label for="cellphone">Teléfono</label>
-          </div>
-
-
-          <div class="d-flex justify-content-center mb-3" *ngIf="attendance.value == 'yes'">
-            <div class="form-check me-3">
-              <input class="form-check-input" type="checkbox" name="companion" id="companion" [(ngModel)]="companion" required>
-              <label class="form-check-label" for="companion">
-                LLevo acompañante
-              </label>
+          <div class="input-field form-group" *ngIf="form.get('attendance')?.value == 'yes'">
+            <input required autocomplete="off" type="email" id="email" formControlName="guestEmail" />
+            <label for="email">Correo electrónico*</label>
+            
+            <!-- Mensaje de error -->
+            <div *ngIf="form.get('guestEmail')?.invalid && (form.get('guestEmail')?.touched || form.get('guestEmail')?.dirty)" class="text-danger ">
+              <small *ngIf="form.get('guestEmail')?.errors?.['required']">El correo electrónico es obligatorio.</small>
+              <small *ngIf="form.get('guestEmail')?.errors?.['email']">El formato del correo electrónico es inválido.</small>
             </div>
           </div>
-          
-          <!-- Campo de nombre -->
-          <div class="input-field" *ngIf="companion && attendance.value == 'yes'">
-            <input required autocomplete="off" type="text" id="companionName" />
-            <label for="companionName">Nombre completo acompañante</label>
+        
+          <!-- Campo de teléfono -->
+          <div class="input-field form-group" *ngIf="form.get('attendance')?.value == 'yes'">
+            <input required autocomplete="off" type="tel" id="cellphone" formControlName="guestCellphone" />
+            <label for="cellphone">Teléfono*</label>
           </div>
-
+        
+          <!-- Checkbox de acompañante -->
+          <div class="d-flex justify-content-center mb-3 form-group" *ngIf="form.get('attendance')?.value == 'yes'">
+            <div class="form-check me-3">
+              <input class="form-check-input" type="checkbox" formControlName="companion" id="companion">
+              <label class="form-check-label" for="companion">Llevo acompañante</label>
+            </div>
+          </div>
+        
+          <!-- Campo de nombre de acompañante -->
+          <div class="input-field form-group" *ngIf="form.get('companion')?.value && form.get('attendance')?.value === 'yes'">
+            <input required autocomplete="off" type="text" id="companionName" formControlName="companionName" />
+            <label for="companionName">Nombre completo del acompañante*</label>
+          </div>
+        
           <!-- Botón de envío -->
           <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-primary button-realista button-rounded font-weight-bold"
-              *ngIf="attendance.value == '' ? false : true">Enviar</button>
+            <button type="submit" class="btn btn-primary button-realista button-rounded font-weight-bold" [disabled]="form.invalid">
+              Enviar
+            </button>
           </div>
-        </form>
+        </form>        
+
       </div>
     </div>
   </div>

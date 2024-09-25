@@ -1,0 +1,11 @@
+{
+    "/google-script-api": {
+      "target": "https://script.google.com",
+      "secure": true,
+      "changeOrigin": true,
+      "logLevel": "debug",
+      "pathRewrite": {
+        "^/google-script-api": ""
+      }
+    }
+  }  
