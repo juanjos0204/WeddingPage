@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, ViewChild, OnInit, Input, OnDestroy } from '@angular/core';
 import { SheetdbService } from './common/shared/services/sheetDB.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -10,12 +10,13 @@ declare var bootstrap: any;
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit, OnInit {
+export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
   @ViewChild('tooltipElement', { static: false }) tooltipElement!: ElementRef;
   @ViewChild('guideOverlay', { static: false }) guideOverlay!: ElementRef;
   @ViewChild('closeGuide', { static: false }) closeGuideButton!: ElementRef;
 
+  isLoading: boolean = false;  // Bandera que controla el estado de carga
   companion: boolean = false;  // Aquí declaramos la propiedad companion
 
   private sections: NodeListOf<Element> = document.querySelectorAll('.section');
@@ -36,6 +37,29 @@ export class AppComponent implements AfterViewInit, OnInit {
       companionName: new FormControl('')
     });
 
+    // Suscripción a los cambios del campo attendance
+    this.form.get('attendance')?.valueChanges.subscribe((value) => {
+      if (value === 'no') {
+        this.form.get('guestName')?.setValidators([Validators.required]);
+        this.form.get('guestEmail')?.clearValidators();
+        this.form.get('guestCellphone')?.clearValidators();
+        this.form.get('companion')?.clearValidators();
+        this.form.get('companionName')?.clearValidators();
+      } else if (value === 'yes') {
+        this.form.get('guestName')?.setValidators([Validators.required]);
+        this.form.get('guestEmail')?.setValidators([Validators.required, Validators.email]);
+        this.form.get('guestCellphone')?.setValidators([Validators.required]);
+        this.form.get('companion')?.setValidators([]);
+        this.form.get('companionName')?.setValidators([]);
+      }
+
+      this.form.get('guestName')?.updateValueAndValidity();
+      this.form.get('guestEmail')?.updateValueAndValidity();
+      this.form.get('guestCellphone')?.updateValueAndValidity();
+      this.form.get('companion')?.updateValueAndValidity();
+      this.form.get('companionName')?.updateValueAndValidity();
+    });
+
     // Validación del companion
     this.form.get('companion')?.valueChanges.subscribe((value) => {
       if (value) {
@@ -48,7 +72,7 @@ export class AppComponent implements AfterViewInit, OnInit {
 
     // Suscripción a los cambios del campo attendance
     this.form.get('attendance')?.valueChanges.subscribe((value) => {
-      if (value === 'no') {
+      if (value) {
         this.resetSpecificFormFields(); // Limpia los campos si se selecciona 'no'
       }
     });
@@ -56,17 +80,16 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   // Método para limpiar campos específicos del formulario
   resetSpecificFormFields() {
-    // Aquí defines qué campos quieres limpiar
-    this.form.get('guestName')?.reset(); // Restablece el campo nombre
-    this.form.get('guestEmail')?.reset(); // Restablece el campo email
-    this.form.get('guestCellphone')?.reset(); // Restablece el campo celular
-    this.form.get('companion')?.setValue(false); // Desmarca el checkbox de acompañante
-    this.form.get('companionName')?.reset(); // Restablece el campo de nombre de acompañante
+    this.form.get('guestName')?.reset(); 
+    this.form.get('guestEmail')?.reset(); 
+    this.form.get('guestCellphone')?.reset(); 
+    this.form.get('companion')?.setValue(false); 
+    this.form.get('companionName')?.reset(); 
   }
 
   // Método para resetear todos los campos del formulario
   resetFormFields() {
-    this.form.reset();  // Resetea todos los campos del formulario
+    this.form.reset();  
   }
 
   ngAfterViewInit() {
@@ -81,7 +104,7 @@ export class AppComponent implements AfterViewInit, OnInit {
 
     // Obtener el modal por su ID
     const myModalEl = document.getElementById('exampleModal');
-    
+
     // Asegúrate de que el modal existe antes de agregar el evento
     if (myModalEl) {
       myModalEl.addEventListener('hidden.bs.modal', () => {
@@ -104,7 +127,7 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   onCompanionChange(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
-    this.companion = inputElement.checked; // Asignar el valor de checked a la propiedad companion
+    this.companion = inputElement.checked; 
   }
 
   handleScroll() {
@@ -133,8 +156,8 @@ export class AppComponent implements AfterViewInit, OnInit {
       const animateScroll = (currentTime: number) => {
         if (!startTime) startTime = currentTime;
         const timeElapsed = currentTime - startTime;
-        const progress = Math.min(timeElapsed / duration, 1); // Asegura que no exceda 1
-        const easing = this.easeInOutQuad(progress); // Función de easing
+        const progress = Math.min(timeElapsed / duration, 1); 
+        const easing = this.easeInOutQuad(progress); 
 
         window.scrollTo(0, startY + distance * easing);
 
@@ -155,11 +178,11 @@ export class AppComponent implements AfterViewInit, OnInit {
   observeSection2() {
     const section2 = document.querySelector('#section2');
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !this.guideClosed) { // Verifica si la guía está cerrada
-        this.guideOverlay.nativeElement.style.display = 'flex'; // Mostrar la guía al entrar en la sección 2
+      if (entries[0].isIntersecting && !this.guideClosed) {
+        this.guideOverlay.nativeElement.style.display = 'flex'; 
         this.closeGuideButton.nativeElement.style.display = 'flex';
       } else {
-        this.guideOverlay.nativeElement.style.display = 'none'; // Ocultar si salimos de la sección 2
+        this.guideOverlay.nativeElement.style.display = 'none'; 
         this.closeGuideButton.nativeElement.style.display = 'none';
       }
     }, { threshold: 0.5 });
@@ -183,7 +206,10 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   onSubmit(): void {
     if (this.form.valid) {
-      const formData = this.form.value;
+      this.isLoading = true; // Activar el loader
+  
+      const formData = this.form.value; // Obtener los datos del formulario
+  
       this.sheetdbService.postGuestData(
         formData.attendance,
         formData.guestName,
@@ -193,23 +219,20 @@ export class AppComponent implements AfterViewInit, OnInit {
       ).subscribe(
         (response) => {
           console.log('Data submitted successfully:', response);
-          this.resetFormFields();  // Resetea el formulario después de enviar los datos
+          this.resetFormFields(); // Reiniciar los campos del formulario
         },
         (error) => {
           console.error('Error submitting data:', error);
+        },
+        () => {
+          this.isLoading = false; // Desactivar el loader al finalizar la solicitud
         }
       );
-    } else {
-      console.error('Please fill out all fields.');
     }
   }
+  
 
   ngOnDestroy() {
-    // Limpia el listener al destruir el componente
-    const myModalEl = document.getElementById('exampleModal');
-    if (myModalEl) {
-      myModalEl.removeEventListener('hidden.bs.modal', this.onModalClose);
-    }
+    window.removeEventListener('scroll', () => this.handleScroll());
   }
-
 }

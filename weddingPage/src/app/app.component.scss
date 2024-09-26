@@ -168,7 +168,9 @@ body {
 }
 
 .modal-body {
+  line-height: normal;
   padding-top: 20px; /* Para ajustar el padding debajo de la imagen */
+  overflow-y: auto; /* Permite el desplazamiento si el contenido es demasiado grande */
 }
 
 /* Ajustes adicionales para el formulario */
@@ -203,7 +205,7 @@ body {
 
 .input-field input {
   padding: 10px 15px;
-  font-size: 1rem;
+  font-size: 2rem;
   border-radius: 8px;
   border: solid 1px #8d8d8d;
   letter-spacing: 1px;
@@ -228,6 +230,32 @@ body {
   border-radius: 100px;
   font-size: large;
 }
+
+//start loader del form
+.letter-image.animating .animated-mail {
+  transform: translateY(50px);
+  -webkit-transform: translateY(50px);
+  -moz-transform: translateY(50px);
+}
+
+.letter-image.animating .animated-mail .top-fold {
+  transition: transform 0.4s, z-index 0.2s;
+  transform: rotateX(180deg);
+  -webkit-transition: transform 0.4s, z-index 0.2s;
+  -webkit-transform: rotateX(180deg);
+  -moz-transition: transform 0.4s, z-index 0.2s;
+  -moz-transform: rotateX(180deg);
+  z-index: 0;
+}
+
+.letter-image.animating .animated-mail .letter {
+  height: 180px;
+}
+
+.letter-image.animating .shadow {
+  width: 250px;
+}
+//end loader del form
 
 //End form
 

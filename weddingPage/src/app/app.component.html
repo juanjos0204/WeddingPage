@@ -25,7 +25,7 @@
 
   <div id="section2" class="section section2">
     <div class="card">
-      <h2>Ubicación</h2>
+      <!-- <h2>Lugar</h2> -->
       <div class="card">
         <h2 class="d-flex p-2 justify-content-center display-6">Tu presencia es importante</h2>
         <h2 class="d-flex mt-2 p-2 justify-content-center alice-regular font-weight-bold">31 de mayo de 2025 | 12:00
@@ -47,8 +47,7 @@
           <div class="card-body justify-content-center alice-regular">
             ¡Puedes dar click en la dirección para conocer el mapa!
             <div class=" d-flex justify-content-center mt-1">
-              <button type="button" class="btn btn-primary alice-regular"  
-                (click)="closeFocus()">Cerrar</button>
+              <button type="button" class="btn btn-primary alice-regular" (click)="closeFocus()">Cerrar</button>
             </div>
           </div>
         </div>
@@ -71,7 +70,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <button type="button" class="btn-close d-flex align-self-end position-absolute top-0 z-3" data-bs-dismiss="modal"
         aria-label="Close"></button>
@@ -98,52 +97,64 @@
               </div>
             </div>
           </div>
-        
+
           <!-- Campo de nombre -->
-          <div class="input-field form-group" *ngIf="form.get('attendance')?.value === 'yes' || form.get('attendance')?.value === 'no'">
+          <div class="input-field form-group"
+            *ngIf="form.get('attendance')?.value === 'yes' || form.get('attendance')?.value === 'no'">
             <input required autocomplete="off" type="text" id="name" formControlName="guestName" />
-            <label for="name">Nombre completo*</label>
+            <label class="fs-4" for="name">Nombre completo*</label>
           </div>
-        
+
           <!-- Campo de correo -->
           <div class="input-field form-group" *ngIf="form.get('attendance')?.value == 'yes'">
             <input required autocomplete="off" type="email" id="email" formControlName="guestEmail" />
-            <label for="email">Correo electrónico*</label>
-            
-            <!-- Mensaje de error -->
-            <div *ngIf="form.get('guestEmail')?.invalid && (form.get('guestEmail')?.touched || form.get('guestEmail')?.dirty)" class="text-danger ">
-              <small *ngIf="form.get('guestEmail')?.errors?.['required']">El correo electrónico es obligatorio.</small>
-              <small *ngIf="form.get('guestEmail')?.errors?.['email']">El formato del correo electrónico es inválido.</small>
+            <label class="fs-4" for="email">Correo electrónico*</label>
+
+            <!-- Mensaje de error con margen para reservar espacio -->
+            <div class="mb-2">
+              <small
+                *ngIf="form.get('guestEmail')?.invalid && (form.get('guestEmail')?.touched || form.get('guestEmail')?.dirty)"
+                class="text-danger alice-regular">
+                <span *ngIf="form.get('guestEmail')?.errors?.['required']">El correo electrónico es obligatorio.</span>
+                <span *ngIf="form.get('guestEmail')?.errors?.['email']">El formato del correo electrónico es
+                  inválido.</span>
+              </small>
             </div>
           </div>
-        
+
           <!-- Campo de teléfono -->
           <div class="input-field form-group" *ngIf="form.get('attendance')?.value == 'yes'">
             <input required autocomplete="off" type="tel" id="cellphone" formControlName="guestCellphone" />
-            <label for="cellphone">Teléfono*</label>
+            <label class="fs-4" for="cellphone">Teléfono*</label>
           </div>
-        
+
           <!-- Checkbox de acompañante -->
-          <div class="d-flex justify-content-center mb-3 form-group" *ngIf="form.get('attendance')?.value == 'yes'">
+          <div class="d-flex justify-content-center mb-3 form-group check-label"
+            *ngIf="form.get('attendance')?.value == 'yes'">
             <div class="form-check me-3">
               <input class="form-check-input" type="checkbox" formControlName="companion" id="companion">
               <label class="form-check-label" for="companion">Llevo acompañante</label>
             </div>
           </div>
-        
+
           <!-- Campo de nombre de acompañante -->
-          <div class="input-field form-group" *ngIf="form.get('companion')?.value && form.get('attendance')?.value === 'yes'">
+          <div class="input-field form-group"
+            *ngIf="form.get('companion')?.value && form.get('attendance')?.value === 'yes'">
             <input required autocomplete="off" type="text" id="companionName" formControlName="companionName" />
-            <label for="companionName">Nombre completo del acompañante*</label>
+            <label class="fs-4" for="companionName">Nombre completo del acompañante*</label>
           </div>
-        
+
+          <!-- Loader animado (mostrar solo cuando isLoading es true) -->
+          <app-loader [isLoading]="isLoading"></app-loader>
+
           <!-- Botón de envío -->
           <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-primary button-realista button-rounded font-weight-bold" [disabled]="form.invalid">
+            <button type="submit" class="btn btn-primary button-realista button-rounded font-weight-bold"
+              [disabled]="form.invalid || isLoading">
               Enviar
             </button>
           </div>
-        </form>        
+        </form>
 
       </div>
     </div>
