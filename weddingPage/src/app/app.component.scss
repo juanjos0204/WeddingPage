@@ -231,6 +231,19 @@ body {
   font-size: large;
 }
 
+/* Ocultar los botones de incremento en los campos de tipo number */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  /* Estilo opcional para el campo */
+  -moz-appearance: textfield; /* Para Firefox */
+}
+
+
 //start loader del form
 .letter-image.animating .animated-mail {
   transform: translateY(50px);

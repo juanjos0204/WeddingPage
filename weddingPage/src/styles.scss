@@ -17,6 +17,7 @@
 
 html {
     overflow-x: hidden;
+    scroll-behavior: smooth;
 }
 
 // Definir colores pastel
@@ -64,20 +65,22 @@ $text-on-card: #825c64;
     }
 }
 
-.button-rounded{
+.button-rounded {
     border-radius: 2rem;
 }
 
 .button-gradient {
     background: linear-gradient(135deg, $text-on-card, #d8a7b1);
-    color: #fff; /* Mantener el texto en blanco */
+    color: #fff;
+    /* Mantener el texto en blanco */
     cursor: pointer;
-  }
-  
-  .button-gradient:hover {
-    background: linear-gradient(135deg, #d8a7b1, $text-on-card); /* Invertir los colores en el hover */
-  }
-  
+}
+
+.button-gradient:hover {
+    background: linear-gradient(135deg, #d8a7b1, $text-on-card);
+    /* Invertir los colores en el hover */
+}
+
 
 .font-weight-bold {
     font-weight: bold;
@@ -85,4 +88,9 @@ $text-on-card: #825c64;
 
 .modal-header {
     border-bottom: none;
+}
+
+.toast-container {
+    z-index: 1050;
+    /* Asegúrate de que sea mayor que el de otros elementos */
 }

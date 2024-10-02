@@ -1,6 +1,8 @@
 import { Component, AfterViewInit, ElementRef, ViewChild, OnInit, Input, OnDestroy } from '@angular/core';
 import { SheetdbService } from './common/shared/services/sheetDB.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Helpers } from './common/utils/helpers.utils';
+import { EmailService } from './common/shared/services/emailJS.service';
 
 // Importa el tooltip de Bootstrap si no está cargado globalmente
 declare var bootstrap: any;
@@ -19,20 +21,31 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
   isLoading: boolean = false;  // Bandera que controla el estado de carga
   companion: boolean = false;  // Aquí declaramos la propiedad companion
 
+  dateFormated: string = '';
+  emailError: boolean = false;
+  emailSent: boolean = false;
+  photoFormValue: string = '';
+  urlMap: string = '';
+  urlPage: string = '';
+
   private sections: NodeListOf<Element> = document.querySelectorAll('.section');
   private guideClosed = localStorage.getItem('guideClosed') === 'true'; // Nuevo estado
   private currentSectionIndex = 0; // Índice de la sección actual
 
   form!: FormGroup;  // Declaramos el FormGroup para el formulario
 
-  constructor(private sheetdbService: SheetdbService) { }
+  constructor(private sheetdbService: SheetdbService, private helpers: Helpers, private emailService: EmailService) { }
 
   ngOnInit() {
+    this.dateFormated = this.helpers.formatDateToDDMMYYYY_HHMMSS(new Date());
+
+    this.getDataFromSheet();
+
     this.form = new FormGroup({
       attendance: new FormControl('', Validators.required),
       guestName: new FormControl('', Validators.required),
       guestEmail: new FormControl('', [Validators.required, Validators.email]),
-      guestCellphone: new FormControl('', Validators.required),
+      guestCellphone: new FormControl('', Validators.required), // Solo números
       companion: new FormControl(false),
       companionName: new FormControl('')
     });
@@ -45,12 +58,14 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this.form.get('guestCellphone')?.clearValidators();
         this.form.get('companion')?.clearValidators();
         this.form.get('companionName')?.clearValidators();
+        this.dateFormated = this.helpers.formatDateToDDMMYYYY_HHMMSS(new Date());
       } else if (value === 'yes') {
         this.form.get('guestName')?.setValidators([Validators.required]);
         this.form.get('guestEmail')?.setValidators([Validators.required, Validators.email]);
         this.form.get('guestCellphone')?.setValidators([Validators.required]);
         this.form.get('companion')?.setValidators([]);
         this.form.get('companionName')?.setValidators([]);
+        this.dateFormated = this.helpers.formatDateToDDMMYYYY_HHMMSS(new Date());
       }
 
       this.form.get('guestName')?.updateValueAndValidity();
@@ -80,16 +95,16 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
   // Método para limpiar campos específicos del formulario
   resetSpecificFormFields() {
-    this.form.get('guestName')?.reset(); 
-    this.form.get('guestEmail')?.reset(); 
-    this.form.get('guestCellphone')?.reset(); 
-    this.form.get('companion')?.setValue(false); 
-    this.form.get('companionName')?.reset(); 
+    this.form.get('guestName')?.reset();
+    this.form.get('guestEmail')?.reset();
+    this.form.get('guestCellphone')?.reset();
+    this.form.get('companion')?.setValue(false);
+    this.form.get('companionName')?.reset();
   }
 
   // Método para resetear todos los campos del formulario
   resetFormFields() {
-    this.form.reset();  
+    this.form.reset();
   }
 
   ngAfterViewInit() {
@@ -116,6 +131,68 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
   // Método llamado al cerrar el modal
   onModalClose() {
     this.resetFormFields(); // Limpiar los campos del formulario al cerrar el modal
+
+    this.form.get('attendance')?.valueChanges.subscribe((value) => {
+      if (value == 'yes') {
+        this.showThankYouMessage(); // Muestra el toast
+      }
+    });
+
+  }
+
+  scrollToSectionById(sectionId: string) {
+    const section = document.querySelector(`#${sectionId}`) as HTMLElement;
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    } else {
+      console.error(`No se encontró la sección con el ID: ${sectionId}`);
+    }
+  }
+
+  getDataFromSheet() {
+    this.sheetdbService.getFotoFormularioField().subscribe(
+      (data) => {
+        if (data && data.length > 0) {
+          // Asignar los valores directamente de las columnas del Excel
+          if (data[0]?.FotoFormulario) {
+            this.photoFormValue = data[0].FotoFormulario; // Columna 'FotoFormulario'
+          }
+          if (data[0]?.PaginaWeb) {
+            this.urlPage = data[0].PaginaWeb; // Columna 'PaginaWeb'
+          }
+          if (data[0]?.Ubicacion) {
+            this.urlMap = data[0].Ubicacion; // Columna 'Ubicacion'
+          }
+  
+          console.log('Foto:', this.photoFormValue);
+          console.log('URL de página:', this.urlPage);
+          console.log('URL de mapa:', this.urlMap);
+        }
+      },
+      (error) => {
+        console.error('Error al obtener los datos desde SheetDB', error);
+      }
+    );
+  }
+
+  capitalizeFirstLetter(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const capitalizedValue = this.helpers.capitalizeFirstLetter(input.value);
+    this.form.get('guestEmail')?.setValue(capitalizedValue);
+  }
+
+  // Validador personalizado para permitir solo números
+  numericValidator(control: FormControl) {
+    const value = control.value;
+    // Verifica si el valor es un número y no está vacío
+    if (value && !/^\d+$/.test(value)) {
+      return { nonNumeric: true }; // Retorna un objeto de error si hay letras
+    }
+    return null; // Si es válido, retorna null
   }
 
   closeFocus() {
@@ -127,14 +204,14 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
   onCompanionChange(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
-    this.companion = inputElement.checked; 
+    this.companion = inputElement.checked;
   }
 
   handleScroll() {
     const currentScroll = window.pageYOffset;
     const screenHeight = window.innerHeight;
 
-    // Verifica si hemos llegado al final de la sección actual
+    // Verifica si se ha llegado al final de la sección actual
     const sectionBottom = (this.sections[this.currentSectionIndex] as HTMLElement).getBoundingClientRect().bottom + currentScroll;
 
     if (currentScroll + screenHeight >= sectionBottom) {
@@ -144,6 +221,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   scrollToSection(index: number) {
+    console.log(`Scrolling to section: ${index}`);
     const targetSection = this.sections[index] as HTMLElement;
 
     if (targetSection) {
@@ -156,8 +234,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
       const animateScroll = (currentTime: number) => {
         if (!startTime) startTime = currentTime;
         const timeElapsed = currentTime - startTime;
-        const progress = Math.min(timeElapsed / duration, 1); 
-        const easing = this.easeInOutQuad(progress); 
+        const progress = Math.min(timeElapsed / duration, 1);
+        const easing = this.easeInOutQuad(progress);
 
         window.scrollTo(0, startY + distance * easing);
 
@@ -179,10 +257,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     const section2 = document.querySelector('#section2');
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && !this.guideClosed) {
-        this.guideOverlay.nativeElement.style.display = 'flex'; 
+        this.guideOverlay.nativeElement.style.display = 'flex';
         this.closeGuideButton.nativeElement.style.display = 'flex';
       } else {
-        this.guideOverlay.nativeElement.style.display = 'none'; 
+        this.guideOverlay.nativeElement.style.display = 'none';
         this.closeGuideButton.nativeElement.style.display = 'none';
       }
     }, { threshold: 0.5 });
@@ -192,6 +270,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
+  //Generador de petalos
   private generatePetals() {
     const petalsContainer = document.querySelector('.petals-container') as HTMLElement;
     for (let i = 0; i < 50; i++) {
@@ -207,30 +286,99 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
   onSubmit(): void {
     if (this.form.valid) {
       this.isLoading = true; // Activar el loader
-  
       const formData = this.form.value; // Obtener los datos del formulario
-  
+      this.emailError = false; // Reinicia el error al enviar
+      this.emailSent = false; // Reinicia el estado de envío
+
+      if (!this.urlPage) {
+        console.error('Error: La URL de la página no está disponible.');
+        this.isLoading = false; // Desactivar el loader
+        this.emailError = true; // Marcar error en el envío de email
+        return;
+      }
+
+      // URL de invitación que será enviada por email
+      let invitationUrl: string = this.urlPage; // Cambia a tu URL real
+
+      // Enviar los datos del invitado a SheetDB
       this.sheetdbService.postGuestData(
         formData.attendance,
-        formData.guestName,
-        formData.guestEmail,
+        this.helpers.capitalizeName(formData.guestName),
+        this.dateFormated,
+        formData.guestEmail ? formData.guestEmail.toLowerCase() : '',
         formData.guestCellphone,
         formData.companionName
       ).subscribe(
         (response) => {
-          console.log('Data submitted successfully:', response);
-          this.resetFormFields(); // Reiniciar los campos del formulario
+          console.log('Datos enviados exitosamente:', response);
+
+          if (formData.attendance === 'yes') {
+
+            // Preparar datos para enviar el email
+            const emailData = {
+              name: this.helpers.capitalizeName(formData.guestName), // Variable {{name}} en la plantilla
+              to_email: formData.guestEmail, // Correo del destinatario
+              invitationUrl: invitationUrl // URL dinámica desde el frontend
+            };
+
+            // Enviar email usando el servicio de EmailJS
+            this.emailService.sendEmail(emailData)
+              .then((emailResponse) => {
+                console.log('Email enviado exitosamente:', emailResponse);
+                this.emailSent = true; // Marcar que el email fue enviado exitosamente
+                this.emailError = false; // Limpiar el mensaje de error si el envío es exitoso
+
+                // Reiniciar los campos del formulario
+                this.resetFormFields();
+              })
+              .catch((error) => {
+                console.error('Error al enviar el email:', error);
+                this.emailError = true; // Marcar que hubo un error al enviar el email
+                this.emailSent = false; // Asegurar que el estado de envío es false
+              });
+
+          }
+
         },
         (error) => {
-          console.error('Error submitting data:', error);
+          console.error('Error al enviar datos a SheetDB:', error);
         },
-        () => {
-          this.isLoading = false; // Desactivar el loader al finalizar la solicitud
+        async () => {
+          // Asegúrate de que el modal se cierre antes de establecer isLoading en false
+          await this.closeModal();
+          this.isLoading = false; // Desactivar el loader al finalizar el proceso
+          this.scrollToSectionById('section3');
         }
       );
     }
   }
-  
+
+  // Método para mostrar el Toast de agradecimiento
+  private showThankYouMessage() {
+    const toastEl = document.getElementById('thankYouToast');
+    if (toastEl) {
+      const toast = new bootstrap.Toast(toastEl); // Crear instancia del Toast
+      toast.show(); // Mostrar el Toast
+    }
+  }
+
+  // Método para cerrar el modal y devolver una promesa
+  private closeModal(): Promise<void> {
+    return new Promise((resolve) => {
+      const myModalEl = document.getElementById('exampleModal');
+      if (myModalEl) {
+        const modal = bootstrap.Modal.getInstance(myModalEl); // Obtén la instancia del modal
+        modal.hide(); // Cierra el modal
+
+        // Espera un pequeño tiempo para que la animación de cierre termine
+        setTimeout(() => {
+          resolve(); // Resuelve la promesa
+        }, 300); // Ajusta el tiempo según la duración de la animación
+      } else {
+        resolve(); // Resuelve de inmediato si no hay modal
+      }
+    });
+  }
 
   ngOnDestroy() {
     window.removeEventListener('scroll', () => this.handleScroll());

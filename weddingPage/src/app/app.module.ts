@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { CoreModule } from './common/core/core.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { Helpers } from './common/utils/helpers.utils';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,7 @@ import { HttpClientModule } from '@angular/common/http';
     HttpClientModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [Helpers],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

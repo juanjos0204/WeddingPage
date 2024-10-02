@@ -25,13 +25,12 @@
 
   <div id="section2" class="section section2">
     <div class="card">
-      <!-- <h2>Lugar</h2> -->
       <div class="card">
         <h2 class="d-flex p-2 justify-content-center display-6">Tu presencia es importante</h2>
         <h2 class="d-flex mt-2 p-2 justify-content-center alice-regular font-weight-bold">31 de mayo de 2025 | 12:00
           P.M.</h2>
         <a class="d-flex p-2 justify-content-center text-decoration-none alice-regular"
-          href="https://maps.app.goo.gl/SEAzgvHMRw9N5j9EA" target="_blank" id="focusText">
+          [href]="urlMap" target="_blank" id="focusText">
           Finca Villa Esther, Vda. Curazao, Copacabana, Antioquia
         </a>
 
@@ -59,10 +58,9 @@
     <div class="card">
       <h2 class="d-flex p-2 justify-content-center display-6">Detalles del evento</h2>
       <ol>
-        <li class="alice-regular">El matrimonio se realizará a puerta cerrada y los invitados participarán de la reunión
-          y almuerzo organizado para la celebración de la boda.</li>
-        <li class="alice-regular">En nuestra celebración no ofreceremos licor, pero si lo deseas, siéntete libre de
-          llevar el tuyo.</li>
+        <li class="alice-regular">El matrimonio se realizará a puerta cerrada y los invitados participarán de la reunión y almuerzo organizado para la celebración de la boda.</li>
+        <li class="alice-regular"><strong>No es obligatorio traer un regalo</strong>, pero si deseas hacerlo, te sugerimos la opción de <strong>lluvia de sobres</strong>.</li>
+        <li class="alice-regular">En nuestra celebración no ofreceremos licor, pero si lo deseas, siéntete libre de llevar el tuyo.</li>
       </ol>
     </div>
   </div>
@@ -76,7 +74,7 @@
         aria-label="Close"></button>
       <!-- Imagen circular centrada -->
       <div class="modal-img-container">
-        <img src="../assets/images/WhatsApp.jpg" class="modal-img" alt="Imagen">
+        <img [src]="photoFormValue" class="modal-img" alt="Imagen">
       </div>
 
       <div class="modal-body">
@@ -101,17 +99,22 @@
           <!-- Campo de nombre -->
           <div class="input-field form-group"
             *ngIf="form.get('attendance')?.value === 'yes' || form.get('attendance')?.value === 'no'">
-            <input required autocomplete="off" type="text" id="name" formControlName="guestName" />
+            <input required autocomplete="off" type="text" id="name" formControlName="guestName"
+              class="text-capitalize" />
             <label class="fs-4" for="name">Nombre completo*</label>
           </div>
 
           <!-- Campo de correo -->
           <div class="input-field form-group" *ngIf="form.get('attendance')?.value == 'yes'">
-            <input required autocomplete="off" type="email" id="email" formControlName="guestEmail" />
+            <input required autocomplete="off" type="email" id="email" formControlName="guestEmail"
+              (input)="capitalizeFirstLetter($event)" />
             <label class="fs-4" for="email">Correo electrónico*</label>
 
             <!-- Mensaje de error con margen para reservar espacio -->
             <div class="mb-2">
+              <small *ngIf="emailError" class="text-danger alice-regular">
+                <span *ngIf="!emailSent">No se pudo enviar el correo. Verifique la dirección.</span>
+              </small>
               <small
                 *ngIf="form.get('guestEmail')?.invalid && (form.get('guestEmail')?.touched || form.get('guestEmail')?.dirty)"
                 class="text-danger alice-regular">
@@ -124,7 +127,8 @@
 
           <!-- Campo de teléfono -->
           <div class="input-field form-group" *ngIf="form.get('attendance')?.value == 'yes'">
-            <input required autocomplete="off" type="tel" id="cellphone" formControlName="guestCellphone" />
+            <input required autocomplete="off" type="number" id="cellphone" formControlName="guestCellphone"
+              class="text-capitalize" />
             <label class="fs-4" for="cellphone">Teléfono*</label>
           </div>
 
@@ -140,7 +144,8 @@
           <!-- Campo de nombre de acompañante -->
           <div class="input-field form-group"
             *ngIf="form.get('companion')?.value && form.get('attendance')?.value === 'yes'">
-            <input required autocomplete="off" type="text" id="companionName" formControlName="companionName" />
+            <input required autocomplete="off" type="text" id="companionName" formControlName="companionName"
+              class="text-capitalize" />
             <label class="fs-4" for="companionName">Nombre completo del acompañante*</label>
           </div>
 
@@ -155,8 +160,20 @@
             </button>
           </div>
         </form>
-
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast de agradecimiento centrado -->
+<div class="toast-container position-fixed top-50 start-50 translate-middle p-3">
+  <div id="thankYouToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="15000">
+    <div class="toast-header">
+      <h1><strong class="me-auto text-success">¡Gracias por confirmar!</strong></h1>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body alice-regular">
+      Hemos enviado una tarjeta del evento a tu correo. Te sugerimos revisarlo desde tu celular preferiblemente.
     </div>
   </div>
 </div>
